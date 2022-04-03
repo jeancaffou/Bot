@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import getPixels from "get-pixels";
 import WebSocket from 'ws';
 
-const VERSION_NUMBER = 3;
+const VERSION_NUMBER = 4;
 
 console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
@@ -99,6 +99,8 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     setInterval(() => {
         if (socket) socket.send(JSON.stringify({ type: 'ping' }));
     }, 5000);
+    // Refresh de tokens elke 30 minuten. Moet genoeg zijn toch.
+    setInterval(refreshTokens, 30 * 60 * 1000);
 })();
 
 function startPlacement() {
@@ -134,11 +136,7 @@ async function refreshTokens() {
     console.log("Refreshed tokens: ", tokens)
 
     accessTokens = tokens;
-    defaultAccessToken = tokens[0]
-
-    // Refresh de tokens elke 30 minuten. Moet genoeg zijn toch.
-    setInterval(refreshTokens, 30 * 60 * 1000);
-
+    defaultAccessToken = tokens[0];
     hasTokens = true;
 }
 
@@ -227,11 +225,16 @@ async function attemptPlace(accessToken) {
     try {
         if (data.errors) {
             const error = data.errors[0];
-            const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
-            const nextPixelDate = new Date(nextPixel);
-            const delay = nextPixelDate.getTime() - Date.now();
-            console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
-            setTimeout(retry, delay);
+            if (error.extensions && error.extensions.nextAvailablePixelTimestamp) {
+                const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
+                const nextPixelDate = new Date(nextPixel);
+                const delay = nextPixelDate.getTime() - Date.now();
+                console.log(`Pixel te snel geplaatst! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
+                setTimeout(retry, delay);
+            } else {
+                console.error(`[!!] Kritieke fout: ${error.message}. Heb je de 'reddit_session' cookie goed gekopieerd?`);
+                console.error(`[!!] Los dit op en herstart het script`);
+            }
         } else {
             const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
             const nextPixelDate = new Date(nextPixel);
