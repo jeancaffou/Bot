@@ -3,7 +3,7 @@
 // @namespace    https://github.com/jeancaffou/Bot
 // @version      22
 // @description  Avtomatika za risat PlaceSI
-// @author       NoahvdAa
+// @author       https://github.com/PlaceNL
 // @match        https://www.reddit.com/r/place/*
 // @match        https://new.reddit.com/r/place/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
@@ -119,7 +119,7 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
 
 async function getDesign() {
     currentOrderCtx = await getCanvasFromUrl(`https://klv.si/placesi/design.php`, currentOrderCanvas, 0, 0, true);
-    order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 1000).data);
+    order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 2000).data);
     Toastify({
         text: `Nov zemljevid je nalozen, skupaj ${order.length} slikovnih pik`,
         duration: 10000
