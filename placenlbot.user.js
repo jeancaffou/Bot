@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceSI Bot
 // @namespace    https://github.com/jeancaffou/Bot
-// @version      20
+// @version      21
 // @description  Avtomatika za risat PlaceSI
 // @author       NoahvdAa
 // @match        https://www.reddit.com/r/place/*
@@ -20,7 +20,6 @@
 //Sorry voor de rommelige code, haast en clean gaatn iet altijd samen ;)
 //SI: Oprostite za neurejeno kodo, hitenje in čisto ne gresta vedno skupaj TEST
 
-var socket;
 var order = undefined;
 var accessToken;
 var currentOrderCanvas = document.createElement('canvas');
