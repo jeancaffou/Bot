@@ -1,9 +1,8 @@
-**NEDERLANDSE VERSIE ONDERAAN DE PAGINA**
+## PlaceSI bot
 
 Ne rabi posebne razlage. Če ne veš, za kaj se gre, pojdi drugam.
 Template designa je na [https://github.com/jeancaffou/Bot/blob/master/design.png](https://github.com/jeancaffou/Bot/blob/master/design.png). Zaradi CORS je png hostan drugje preko PHP proxya.
 
-## User script bot
 
 ### Installation instructions
 
