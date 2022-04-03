@@ -27,6 +27,9 @@ var currentOrderCanvas = document.createElement('canvas');
 var currentOrderCtx = currentOrderCanvas.getContext('2d');
 var currentPlaceCanvas = document.createElement('canvas');
 
+// Global constants
+const DEFAULT_TOAST_DURATION_MS = 10000;
+
 const COLOR_MAPPINGS = {
     '#BE0039': 1,
     '#FF4500': 2,
@@ -101,10 +104,14 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     setInterval(() => {
         getDesign();
     }, 10 * 60 * 1000);
+
+    setInterval(async () => {
+        accessToken = await getAccessToken();
+    }, 30 * 60 * 1000)
 })();
 
 async function getDesign() {
-    currentOrderCtx = await getCanvasFromUrl(`https://klv.si/placesi/design.php`, currentOrderCanvas);
+    currentOrderCtx = await getCanvasFromUrl(`https://klv.si/placesi/design.php`, currentOrderCanvas, 0, 0, true);
     order = getRealWork(currentOrderCtx.getImageData(0, 0, 2000, 1000).data);
     Toastify({
         text: `Nov zemljevid je nalozen, skupaj ${order.length} slikovnih pik`,
@@ -119,13 +126,13 @@ async function attemptPlace() {
     }
     var ctx;
     try {
-        ctx = await getCanvasFromUrl(await getCurrentImageUrl('0'), currentPlaceCanvas, 0, 0);
-        ctx = await getCanvasFromUrl(await getCurrentImageUrl('1'), currentPlaceCanvas, 1000, 0)
+        ctx = await getCanvasFromUrl(await getCurrentImageUrl('0'), currentPlaceCanvas, 0, 0, false);
+        ctx = await getCanvasFromUrl(await getCurrentImageUrl('1'), currentPlaceCanvas, 1000, 0, false)
     } catch (e) {
         console.warn('Fout bij ophalen map: ', e);
         Toastify({
             text: 'Fout bij ophalen map. Opnieuw proberen in 10 sec...',
-            duration: 10000
+            duration: DEFAULT_TOAST_DURATION_MS
         }).showToast();
         setTimeout(attemptPlace, 10000); // probeer opnieuw in 10sec.
         return;
@@ -145,6 +152,7 @@ async function attemptPlace() {
     }
 
     const percentComplete = 100 - Math.ceil(work.length * 100 / order.length);
+    const workRemaining = work.length;
     const idx = Math.floor(Math.random() * work.length);
     const i = work[idx];
     const x = i % 2000;
@@ -152,8 +160,8 @@ async function attemptPlace() {
     const hex = rgbaOrderToHex(i, rgbaOrder);
 
     Toastify({
-        text: `Poskus postavitve piksla na ${x}, ${y}... (${percentComplete}% dokončano)`,
-        duration: 10000
+        text: `Poskus postavitve piksla na ${x}, ${y}... (${percentComplete}% dokončano, ostalo še ${workRemaining})`,
+        duration: DEFAULT_TOAST_DURATION_MS
     }).showToast();
 
     const res = await place(x, y, COLOR_MAPPINGS[hex]);
@@ -164,18 +172,20 @@ async function attemptPlace() {
             const nextPixel = error.extensions.nextAvailablePixelTs + 3000;
             const nextPixelDate = new Date(nextPixel);
             const delay = nextPixelDate.getTime() - Date.now();
+            const toast_duration = delay > 0 ? delay : DEFAULT_TOAST_DURATION_MS;
             Toastify({
                 text: `Pixel je objavljen prehitro! Naslednji piksel bo postavljen na ${nextPixelDate.toLocaleTimeString()}.`,
-                duration: delay
+                duration: toast_duration
             }).showToast();
             setTimeout(attemptPlace, delay);
         } else {
             const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
             const nextPixelDate = new Date(nextPixel);
             const delay = nextPixelDate.getTime() - Date.now();
+            const toast_duration = delay > 0 ? delay : DEFAULT_TOAST_DURATION_MS;
             Toastify({
                 text: `Pixel postavljen na ${x}, ${y}! Naslednji piksel bo postavljen na ${nextPixelDate.toLocaleTimeString()}.`,
-                duration: delay
+                duration: toast_duration
             }).showToast();
             setTimeout(attemptPlace, delay);
         }
@@ -183,7 +193,7 @@ async function attemptPlace() {
         console.warn('Fout bij response analyseren', e);
         Toastify({
             text: `Analizirajte napako pri odgovoru: ${e}.`,
-            duration: 10000
+            duration: DEFAULT_TOAST_DURATION_MS
         }).showToast();
         setTimeout(attemptPlace, 10000);
     }
@@ -275,12 +285,15 @@ async function getCurrentImageUrl(id = '0') {
     });
 }
 
-function getCanvasFromUrl(url, canvas, x = 0, y = 0) {
+function getCanvasFromUrl(url, canvas, x = 0, y = 0, clearCanvas = false) {
     return new Promise((resolve, reject) => {
         let loadImage = ctx => {
             var img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
+                if (clearCanvas) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
                 ctx.drawImage(img, x, y);
                 resolve(ctx);
             };
