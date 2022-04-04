@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         PlaceSI Bot
 // @namespace    https://github.com/jeancaffou/Bot
-// @version      22
+// @version      24
 // @description  Avtomatika za risat PlaceSI
 // @author       https://github.com/PlaceNL
 // @match        https://www.reddit.com/r/place/*
 // @match        https://new.reddit.com/r/place/*
 // @connect      reddit.com
+// @connect      klv.si
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
 // @require	     https://cdn.jsdelivr.net/npm/toastify-js
 // @resource     TOASTIFY_CSS https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css
