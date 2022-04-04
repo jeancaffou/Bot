@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceSI Bot
 // @namespace    https://github.com/jeancaffou/r-place-bot
-// @version      24
+// @version      25
 // @description  Avtomatika za risat PlaceSI
 // @author       https://github.com/PlaceNL
 // @match        https://www.reddit.com/r/place/*
@@ -191,7 +191,7 @@ async function attemptPlace() {
             }).showToast();
             setTimeout(attemptPlace, delay);
         } else {
-            const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
+            const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000 + Math.floor(Math.random() * 10000); // Random tijd toevoegen tussen 0 en 10 sec om detectie te voorkomen en te spreiden na server herstart.
             const nextPixelDate = new Date(nextPixel);
             const delay = nextPixelDate.getTime() - Date.now();
             const toast_duration = delay > 0 ? delay : DEFAULT_TOAST_DURATION_MS;

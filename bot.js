@@ -2,7 +2,8 @@ import fetch from 'node-fetch';
 import getPixels from "get-pixels";
 import WebSocket from 'ws';
 
-const VERSION_NUMBER = 9;
+const PREFIX = process.env.PREFIX || "simple"
+const VERSION_NUMBER = 11;
 
 console.log(`PlaceNL headless client V${VERSION_NUMBER}`);
 
@@ -205,7 +206,7 @@ function connectSocket() {
     socket.onopen = function () {
         console.log('Verbonden met PlaceNL server!')
         socket.send(JSON.stringify({ type: 'getmap' }));
-        socket.send(JSON.stringify({ type: 'brand', brand: `nodeheadlessV${VERSION_NUMBER}` }));
+        socket.send(JSON.stringify({ type: 'brand', brand: `nodeheadless-${PREFIX}-V${VERSION_NUMBER}` }));
     };
 
     socket.onmessage = async function (message) {
@@ -297,9 +298,9 @@ async function attemptPlace(accessTokenHolder) {
                 console.error(`[!!] Los dit op en herstart het script`);
             }
         } else {
-            const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000;
+            const nextPixel = data.data.act.data[0].data.nextAvailablePixelTimestamp + 3000 + Math.floor(Math.random() * 10000); // Random tijd toevoegen tussen 0 en 10 sec om detectie te voorkomen en te spreiden na server herstart.
             const nextPixelDate = new Date(nextPixel);
-            const delay = nextPixelDate.getTime() - Date.now();
+            const delay = nextPixelDate.getTime() - Date.now(); 
             console.log(`Pixel geplaatst op ${x}, ${y}! Volgende pixel wordt geplaatst om ${nextPixelDate.toLocaleTimeString()}.`)
             setTimeout(retry, delay);
         }
