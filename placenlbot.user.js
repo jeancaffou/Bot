@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PlaceSI Bot
 // @namespace    https://github.com/jeancaffou/r-place-bot
-// @version      25
+// @version      26
 // @description  Avtomatika za risat PlaceSI
 // @author       https://github.com/PlaceNL
 // @match        https://www.reddit.com/r/place/*
@@ -156,10 +156,10 @@ async function attemptPlace() {
 
     if (work.length === 0) {
         Toastify({
-            text: `Vsi piksli so ze na pravem mestu! Poskusi znova cez 30 sekund ...`,
-            duration: 30000
+            text: `Vsi piksli so ze na pravem mestu! Poskusi znova cez 10 sekund ...`,
+            duration: 10000
         }).showToast();
-        setTimeout(attemptPlace, 30000); // probeer opnieuw in 30sec.
+        setTimeout(attemptPlace, 10000);
         return;
     }
 
