@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         PlaceSI Bot
-// @namespace    https://github.com/jeancaffou/Bot
+// @namespace    https://github.com/jeancaffou/r-place-bot
 // @version      24
 // @description  Avtomatika za risat PlaceSI
 // @author       https://github.com/PlaceNL
@@ -11,8 +11,8 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
 // @require	     https://cdn.jsdelivr.net/npm/toastify-js
 // @resource     TOASTIFY_CSS https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css
-// @updateURL    https://github.com/jeancaffou/Bot/raw/master/placenlbot.user.js
-// @downloadURL  https://github.com/jeancaffou/Bot/raw/master/placenlbot.user.js
+// @updateURL    https://github.com/jeancaffou/r-place-bot/raw/master/placenlbot.user.js
+// @downloadURL  https://github.com/jeancaffou/r-place-bot/raw/master/placenlbot.user.js
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM.xmlHttpRequest
